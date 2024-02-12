@@ -19,7 +19,8 @@ function App() {
   return (
     <TrainerProvider>
       <div>
-        <Header isLoggedIn={isLoggedIn} /> {/* Pass isLoggedIn state */}
+        <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />{" "}
+        {/* Pass isLoggedIn state */}
         <Routes>
           <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/home" element={<Home />} />

@@ -14,8 +14,8 @@ const Login = ({ setIsLoggedIn }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        // `${process.env.REACT_APP_API_URL}/trainer/login`,
-        `https://api.epicore.fit/trainer/login`,
+        `${process.env.REACT_APP_API_URL}/trainer/login`,
+        // `https://api.epicore.fit/trainer/login`,
         {
           email,
           password,

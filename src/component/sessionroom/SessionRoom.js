@@ -4,20 +4,20 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 
 function SessionRoom() {
   const { id } = useParams(); // Extracting 'id' parameter from the URL
-  
+
   useEffect(() => {
     myMeeting(); // Call myMeeting function when component mounts
   }, []); // Empty dependency array ensures the effect runs only once on mount
 
   let myMeeting = async () => {
-    const appDiv = document.querySelector('.myCallContainer'); // Selecting the container element
+    const appDiv = document.querySelector(".myCallContainer"); // Selecting the container element
     const roomID = id; // Using the extracted 'id' parameter as roomID
     const userID = randomID(5); // Generating a random user ID
     const userName = randomID(5); // Generating a random user name
 
     // Fetching the token from the token server
     const { token } = await generateToken(
-      'https://nextjs-token.vercel.app/api',
+      "https://nextjs-token.vercel.app/api",
       userID
     );
 
@@ -32,13 +32,13 @@ function SessionRoom() {
 
     // Creating ZegoUIKitPrebuilt instance
     const zp = ZegoUIKitPrebuilt.create(KitToken);
-    
+
     // Joining the room
     zp.joinRoom({
       container: appDiv,
       branding: {
         logoURL:
-          'https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png',
+          "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
       },
       scenario: {
         mode: ZegoUIKitPrebuilt.LiveStreaming,
@@ -58,16 +58,17 @@ function SessionRoom() {
     return fetch(
       `${tokenServerUrl}/access_token?userID=${userID}&expired_ts=7200`,
       {
-        method: 'GET',
+        method: "GET",
       }
     ).then((res) => res.json());
   }
 
   // Function to generate random ID
   function randomID(len) {
-    let result = '';
+    let result = "";
     if (result) return result;
-    var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
+    var chars =
+        "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
       maxPos = chars.length,
       i;
     len = len || 5;
@@ -79,7 +80,6 @@ function SessionRoom() {
 
   return (
     <>
-      
       <div
         className="myCallContainer"
         style={{ width: "100vw", height: "100vh" }}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTrainer } from "../../context/TrainerContext";
+import axios from "axios";
 
-const Header = ({ isLoggedIn }) => {
+const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const { trainer } = useTrainer();
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
@@ -22,10 +23,24 @@ const Header = ({ isLoggedIn }) => {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Add logout functionality here
     setShowDropdown(false);
-    navigate(`/`);
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/trainer/logout`,
+        { trainer_id: trainer?.trainer_id }
+      );
+      console.log(response);
+      if (response.status === 200) {
+        setIsLoggedIn(false);
+        navigate(`/`);
+      }
+
+      console.log(response?.data?.response_body);
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+    }
   };
 
   return (
@@ -43,7 +58,9 @@ const Header = ({ isLoggedIn }) => {
               />
             </div>
             {/* Title */}
-            <h1 className="text-2xl font-semibold font-serif text-gray-200">Epicore Trainer Board</h1>
+            <h1 className="text-2xl font-semibold font-serif text-gray-200">
+              Epicore Trainer Board
+            </h1>
           </div>
 
           {/* Trainer Info */}
@@ -68,7 +85,12 @@ const Header = ({ isLoggedIn }) => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 style={{ zIndex: 50 }} // Ensure dropdown icon stays above dropdown content
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
               {/* Dropdown content */}
               {showDropdown && (
