@@ -21,37 +21,44 @@ const Home = () => {
     }
   };
 
+  // const handleJoinClass = (classIdValue) => {
+  //   console.log(classIdValue);
+  //   navigate(`/session-room/${classIdValue}`);
+  // };
   const handleJoinClass = (classIdValue) => {
     console.log(classIdValue);
     // Open a new window for the session room
-    navigate(`/session-room/${classIdValue}`);
+    const newWindow = window.open(`/session-room/${classIdValue}`, "_blank");
     // Add event listener to wait for new window to load
-   
+    newWindow.addEventListener("load", () => {
+      // Call function in new window to start the meeting
+      newWindow.init();
+    });
   };
+  
 
   useEffect(() => {
     fetchSessions();
   }, [trainer]);
 
   return (
-    <div className="min-h-screen bg-gray-200">
-      <div className="container mx-auto px-4 py-8">
-      <h4 className="text-4xl font-light mb-8 text-left text-gray-700 font-serif">Upcoming Sessions</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-12">
-          {sessions.map((session) => (
-            <div key={session.class_id} className="relative rounded-lg overflow-hidden bg-white shadow-md">
-              <img src={session.image} alt={session.name} className="object-cover object-center w-full h-64 rounded-t-lg" />
-              <div className="p-4">
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
-                  onClick={() => handleJoinClass(session.class_id)}
-                >
-                  Start Class
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Upcoming Sessions</h1>
+      <div className="grid grid-cols-3 gap-4">
+        {sessions.map((session) => (
+          <div key={session.class_id} className="bg-gray-200 p-4 rounded">
+            <p>{session.name}</p>
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => handleJoinClass(session.class_id)}
+            >
+              Start
+            </button>
+            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              Cancel
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
