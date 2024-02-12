@@ -40,7 +40,7 @@ const Home = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-12">
           {sessions.map((session) => (
             <div key={session.class_id} className="relative rounded-lg overflow-hidden bg-white shadow-md">
-              <img src={session.image} alt={session.name} className="object-cover object-center w-full h-64 rounded-t-lg" />
+              <img src={session.image} alt={session.name} className="object-cover object-center w-full h-auto rounded-t-lg" style={{height: "450px"}} />
               <div className="p-4">
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
