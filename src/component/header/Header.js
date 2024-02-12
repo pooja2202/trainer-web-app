@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTrainer } from "../../context/TrainerContext";
 
 const Header = ({ isLoggedIn }) => {
   const { trainer } = useTrainer();
   const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
     // Add logout functionality here
+    setShowDropdown(false);
+    navigate(`/`);
   };
 
   return (
@@ -29,7 +48,7 @@ const Header = ({ isLoggedIn }) => {
 
           {/* Trainer Info */}
           {trainer && (
-            <div className="relative flex items-center">
+            <div className="relative flex items-center" ref={dropdownRef}>
               {/* Trainer profile image */}
               <img
                 src={trainer.profile_image}
