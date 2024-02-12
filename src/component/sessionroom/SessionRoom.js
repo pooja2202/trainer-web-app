@@ -1,69 +1,9 @@
-import React, { useEffect } from "react";
+import * as React from "react";
 import { useParams } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 
 function SessionRoom() {
-  const { id } = useParams(); // Extracting 'id' parameter from the URL
-
-  useEffect(() => {
-    myMeeting(); // Call myMeeting function when component mounts
-  }, []); // Empty dependency array ensures the effect runs only once on mount
-
-  let myMeeting = async () => {
-    const appDiv = document.querySelector(".myCallContainer"); // Selecting the container element
-    const roomID = id; // Using the extracted 'id' parameter as roomID
-    const userID = randomID(5); // Generating a random user ID
-    const userName = randomID(5); // Generating a random user name
-
-    // Fetching the token from the token server
-    const { token } = await generateToken(
-      "https://nextjs-token.vercel.app/api",
-      userID
-    );
-
-    // Generating the Kit Token
-    const KitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
-      1150178069, // Your app ID
-      token,
-      roomID,
-      userID,
-      userName
-    );
-
-    // Creating ZegoUIKitPrebuilt instance
-    const zp = ZegoUIKitPrebuilt.create(KitToken);
-
-    // Joining the room
-    zp.joinRoom({
-      container: appDiv,
-      branding: {
-        logoURL:
-          "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
-      },
-      scenario: {
-        mode: ZegoUIKitPrebuilt.LiveStreaming,
-        config: {
-          role: ZegoUIKitPrebuilt.Host, // Assuming the user who starts the meeting is the host
-        },
-      },
-      onLeaveRoom: () => {
-        // Handle leave room event if needed
-      },
-      showUserList: true,
-    });
-  };
-
-  // Function to generate token
-  function generateToken(tokenServerUrl, userID) {
-    return fetch(
-      `${tokenServerUrl}/access_token?userID=${userID}&expired_ts=7200`,
-      {
-        method: "GET",
-      }
-    ).then((res) => res.json());
-  }
-
-  // Function to generate random ID
+  const { id } = useParams();
   function randomID(len) {
     let result = "";
     if (result) return result;
@@ -78,14 +18,79 @@ function SessionRoom() {
     return result;
   }
 
-  return (
-    <>
-      <div
-        className="myCallContainer"
-        style={{ width: "100vw", height: "100vh" }}
-      ></div>
-    </>
-  );
+  function getUrlParams(url) {
+    let urlStr = url.split("?")[1];
+    const urlSearchParams = new URLSearchParams(urlStr);
+    const result = Object.fromEntries(urlSearchParams.entries());
+    return result;
+  }
+  let myMeeting = async (element) => {
+    const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
+    let role = getUrlParams(window.location.href)["role"] || "Host";
+    role =
+      role === "Host"
+        ? ZegoUIKitPrebuilt.Host
+        : role === "Cohost"
+        ? ZegoUIKitPrebuilt.Cohost
+        : ZegoUIKitPrebuilt.Audience;
+
+    let sharedLinks = [];
+    if (role === ZegoUIKitPrebuilt.Host || role === ZegoUIKitPrebuilt.Cohost) {
+      sharedLinks.push({
+        name: "Join as co-host",
+        url:
+          window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID +
+          "&role=Cohost",
+      });
+    }
+    sharedLinks.push({
+      name: "Join as audience",
+      url:
+        window.location.origin +
+        window.location.pathname +
+        "?roomID=" +
+        roomID +
+        "&role=Audience",
+    });
+    const appId = 1033534244;
+    const serverSecret = "9d9a5fbac408a4ed8d3ef978fb1e90fd";
+    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      appId,
+      serverSecret,
+      id,
+      randomID(5),
+      randomID(5)
+    );
+
+    const zp = ZegoUIKitPrebuilt.create(kitToken);
+    zp.joinRoom({
+      container: document.querySelector("#root"),
+      scenario: {
+        mode: ZegoUIKitPrebuilt.LiveStreaming,
+        config: {
+          role,
+        },
+      },
+      sharedLinks: [
+        {
+          name: "Join as an audience",
+          url:
+            window.location.protocol +
+            "//" +
+            window.location.host +
+            window.location.pathname +
+            "?roomID=" +
+            id +
+            "&role=Audience",
+        },
+      ],
+    });
+  };
+
+  return <div ref={myMeeting}></div>;
 }
 
 export default SessionRoom;
