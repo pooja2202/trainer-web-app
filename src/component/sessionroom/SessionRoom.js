@@ -83,7 +83,7 @@ function SessionRoom() {
             window.location.host +
             window.location.pathname +
             "?roomID=" +
-            id +
+            roomID +
             "&role=Audience",
         },
       ],
