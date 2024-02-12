@@ -12,7 +12,7 @@ const Home = () => {
   const fetchSessions = async () => {
     try {
       const response = await axios.get(
-        `http://api.epicore.fit/trainer/web_sessions/${trainer?.trainer_id}`
+        `https://api.epicore.fit/trainer/web_sessions/${trainer?.trainer_id}`
       );
       console.log(response?.data?.response_body);
       setSessions(response?.data?.response_body?.upcoming_classes);
