@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useTrainer } from "../../context/TrainerContext";
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, isLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useTrainer();
 
+  if (isLoggedIn) {
+    return <Navigate to="/home" />;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/trainer/login`,
-        // `https://api.epicore.fit/trainer/login`,
         {
           email,
           password,
@@ -23,7 +26,6 @@ const Login = ({ setIsLoggedIn }) => {
       );
       console.log(response.data);
       if (response.status === 200) {
-        // console.log(response?.data?.response_body?.trainer_info); // complete trainer object
         login(response?.data?.response_body?.trainer_info);
         setIsLoggedIn(true);
         navigate("/home");

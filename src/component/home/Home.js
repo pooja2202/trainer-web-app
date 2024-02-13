@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useTrainer } from "../../context/TrainerContext";
 import { useNavigate } from "react-router-dom";
-import isTimeApproaching from "../../utils/utils";
+import { isTimeApproaching, splitDateTime } from "../../utils/utils";
 
 const Home = () => {
   const [sessions, setSessions] = useState([]);
@@ -66,14 +66,32 @@ const Home = () => {
                 className="object-fill object-center w-full h-auto rounded-t-lg"
                 style={{ height: "350px" }}
               />
-              <div className="p-4 flex justify-center items-center">
-                <button
-                  className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                  disabled={!isTimeApproaching(session.start_date)}
-                  onClick={() => handleJoinClass(session.class_id)}
-                >
-                  Start Class
-                </button>
+              <div className="p-4 flex justify-between">
+                <div className="text-left my-2">
+                  <p style={{ fontSize: "1rem" }}>
+                    Date : {splitDateTime(session?.start_date).date}
+                  </p>
+                  <p style={{ fontSize: "1rem" }}>
+                    Time : {splitDateTime(session?.start_date).time}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <button
+                    className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                    // style={{
+                    //   backgroundColor: isTimeApproaching(session.start_date)
+                    //     ? "#42800d"
+                    //     : "#d2d2d2",
+                    //   cursor: isTimeApproaching(session.start_date)
+                    //     ? "pointer"
+                    //     : "not-allowed",
+                    // }}
+                    // disabled={!isTimeApproaching(session.start_date)}
+                    onClick={() => handleJoinClass(session.class_id)}
+                  >
+                    Start Class
+                  </button>
+                </div>
               </div>
             </div>
           ))}

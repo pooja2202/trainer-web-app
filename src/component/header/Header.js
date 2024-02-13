@@ -35,6 +35,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       if (response.status === 200) {
         setIsLoggedIn(false);
         navigate(`/`);
+        window.location.reload();
       }
 
       console.log(response?.data?.response_body);

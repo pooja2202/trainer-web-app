@@ -5,6 +5,8 @@ import Header from "./component/header/Header";
 import Login from "./component/login/Login";
 import Home from "./component/home/Home";
 import SessionRoom from "./component/sessionroom/SessionRoom";
+import NotFound from "./component/pagenotfound/PageNotFound";
+import Private from "./service/ProtectedRoutes";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -19,11 +21,25 @@ function App() {
   return (
     <TrainerProvider>
       <div>
-        <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />{" "}
+        <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Routes>
-          <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/session-room/:id" element={<SessionRoom />} />
+          <Route
+            path="/"
+            element={
+              <Login setIsLoggedIn={setIsLoggedIn} isLoggedIn={isLoggedIn} />
+            }
+          />
+          <Route
+            path="/home"
+            element={<Private Component={Home} isLoggedIn={isLoggedIn} />}
+          />
+          <Route
+            path="/session-room/:id"
+            element={
+              <Private Component={SessionRoom} isLoggedIn={isLoggedIn} />
+            }
+          />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </TrainerProvider>
