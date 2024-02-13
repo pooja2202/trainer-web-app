@@ -1,9 +1,11 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+import { useNavigate } from "react-router-dom";
 
-function SessionRoom() {
+const SessionRoom = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   function randomID(len) {
     let result = "";
     if (result) return result;
@@ -55,8 +57,8 @@ function SessionRoom() {
         roomID +
         "&role=Audience",
     });
-    const appId = 1033534244;
-    const serverSecret = "9d9a5fbac408a4ed8d3ef978fb1e90fd";
+    const appId = 1150178069;
+    const serverSecret = "772f04ecd41c43548b85db4dd38a1e2f";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appId,
       serverSecret,
@@ -87,10 +89,18 @@ function SessionRoom() {
             "&role=Audience",
         },
       ],
+      onLeaveRoom: () => {
+        navigate("/home");
+        window.location.reload();
+      },
     });
   };
 
-  return <div ref={myMeeting}></div>;
-}
+  return (
+    <div style={{ height: "100vh" }}>
+      <div ref={myMeeting}></div>;
+    </div>
+  );
+};
 
 export default SessionRoom;

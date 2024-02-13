@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useTrainer } from "../../context/TrainerContext";
 import { useNavigate } from "react-router-dom";
+import isTimeApproaching from "../../utils/utils";
 
 const Home = () => {
   const [sessions, setSessions] = useState([]);
@@ -13,7 +14,6 @@ const Home = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/trainer/web_sessions/${trainer?.trainer_id}`
       );
-      console.log(response?.data?.response_body);
       setSessions(response?.data?.response_body?.upcoming_classes);
     } catch (error) {
       console.error("Error fetching sessions:", error);
@@ -30,7 +30,6 @@ const Home = () => {
         }
       );
       if (response.status === 200) {
-        console.log(response?.data?.response_body);
         return response?.data?.response_body?.meeting_id;
       } else {
         console.error(response);
@@ -43,7 +42,6 @@ const Home = () => {
   const handleJoinClass = async (classIdValue) => {
     const meetingIdValue = await startClassHandler(classIdValue);
     navigate(`/session-room/${meetingIdValue}`);
-    // Add event listener to wait for new window to load
   };
 
   useEffect(() => {
@@ -71,6 +69,7 @@ const Home = () => {
               <div className="p-4 flex justify-center items-center">
                 <button
                   className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                  disabled={!isTimeApproaching(session.start_date)}
                   onClick={() => handleJoinClass(session.class_id)}
                 >
                   Start Class
