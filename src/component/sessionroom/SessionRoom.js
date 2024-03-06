@@ -1,13 +1,43 @@
 import * as React from "react";
-import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useParams, useLocation } from "react-router-dom";
 import { useTrainer } from "../../context/TrainerContext";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { useNavigate } from "react-router-dom";
 
 const SessionRoom = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { classId } = location.state;
   const { trainer } = useTrainer();
   const { id } = useParams();
-  const navigate = useNavigate();
+
+  const sessionLiveStatus = async () => {
+    try {
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_URL}/trainer/live_status/${classId}`
+      );
+      console.log(
+        "sessionLiveStatus method call-----",
+        response?.data?.message
+      );
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+    }
+  };
+
+  const endSession = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/trainer/end_class/${classId}`
+      );
+      console.log("response end session", response?.data);
+      // setSessions(response?.data?.response_body?.upcoming_classes);
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+    }
+  };
+
   function randomID(len) {
     let result = "";
     if (result) return result;
@@ -68,6 +98,7 @@ const SessionRoom = () => {
       trainer?.trainer_id,
       trainer?.name
     );
+    console.log(trainer?.trainer_id);
 
     const zp = ZegoUIKitPrebuilt.create(kitToken);
     zp.joinRoom({
@@ -78,6 +109,7 @@ const SessionRoom = () => {
         //   role,
         // },
       },
+
       // sharedLinks: [
       //   {
       //     name: "Join as an audience",
@@ -121,9 +153,11 @@ const SessionRoom = () => {
           role: "Host",
         },
       },
-      onLeaveRoom: () => {
+      onLeaveRoom: async () => {
+        await sessionLiveStatus();
+        await endSession();
         navigate("/home");
-        window.location.reload();
+        await new Promise((resolve) => window.location.reload());
       },
     });
   };
@@ -136,78 +170,3 @@ const SessionRoom = () => {
 };
 
 export default SessionRoom;
-
-// import React, { useEffect, useState } from "react";
-// import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
-
-// const SessionRoom = () => {
-//   // Move useState calls outside of useEffect
-//   const [roomID, setRoomID] = useState("");
-//   const [userID] = useState(() => Math.floor(Math.random() * 10000) + "");
-//   const [userName] = useState(() => "userName" + userID);
-
-//   useEffect(() => {
-//     function getUrlParams(url) {
-//       let urlStr = url.split("?")[1];
-//       const urlSearchParams = new URLSearchParams(urlStr);
-//       const result = Object.fromEntries(urlSearchParams.entries());
-//       return result;
-//     }
-
-//     // Initialize roomID inside useEffect
-//     setRoomID(() => {
-//       const params = getUrlParams(window.location.href);
-//       return params["roomID"] || Math.floor(Math.random() * 10000) + "";
-//     });
-
-//     const appID = 710940122;
-//     const serverSecret = "9a5b7d64b076529800d42e64a53f5dfb";
-//     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-//       appID,
-//       serverSecret,
-//       roomID,
-//       userID,
-//       userName
-//     );
-
-//     const zp = ZegoUIKitPrebuilt.create(kitToken);
-//     zp.joinRoom({
-//       container: document.querySelector("#root"),
-//       sharedLinks: [
-//         {
-//           name: "Personal link",
-//           url:
-//             window.location.protocol +
-//             "//" +
-//             window.location.host +
-//             window.location.pathname +
-//             "?roomID=" +
-//             roomID,
-//         },
-//       ],
-//       scenario: {
-//         mode: ZegoUIKitPrebuilt.VideoConference,
-//       },
-//       turnOnMicrophoneWhenJoining: true,
-//       turnOnCameraWhenJoining: true,
-//       showMyCameraToggleButton: true,
-//       showMyMicrophoneToggleButton: true,
-//       showAudioVideoSettingsButton: true,
-//       showScreenSharingButton: true,
-//       showTextChat: true,
-//       showUserList: true,
-//       maxUsers: 50,
-//       layout: "Auto",
-//       showLayoutButton: true,
-//     });
-
-//     // Cleanup function
-//     return () => {
-//       // You can add cleanup logic here if needed
-//     };
-//   }, [roomID, userID, userName]); // Include dependencies in useEffect dependency array
-
-//   return <div id="root" style={{ width: "100vw", height: "100vh" }}></div>;
-// };
-
-// export default SessionRoom;

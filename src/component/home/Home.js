@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useTrainer } from "../../context/TrainerContext";
 import { useNavigate } from "react-router-dom";
-import { isTimeApproaching, splitDateTime } from "../../utils/utils";
+import { splitDateTime } from "../../utils/utils";
 
 const Home = () => {
   const [sessions, setSessions] = useState([]);
@@ -38,10 +38,28 @@ const Home = () => {
       console.error("Error fetching :", error);
     }
   };
+  const sessionLiveStatus = async (classIdValue) => {
+    try {
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_URL}/trainer/live_status/${classIdValue}`
+      );
+      console.log(
+        "sessionLiveStatus method call-----",
+        response?.data?.message
+      );
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+    }
+  };
 
   const handleJoinClass = async (classIdValue) => {
     const meetingIdValue = await startClassHandler(classIdValue);
-    navigate(`/session-room/${meetingIdValue}`);
+    sessionLiveStatus(classIdValue);
+    navigate(`/session-room/${meetingIdValue}`, {
+      state: { meetingId: meetingIdValue, classId: classIdValue },
+    });
+    // navigate(`/session-room/${meetingIdValue}?classId=${classIdValue}`);
+    // navigate(`/session-room/${meetingIdValue}`);
   };
 
   useEffect(() => {
