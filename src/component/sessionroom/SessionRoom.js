@@ -13,7 +13,6 @@ const SessionRoom = () => {
   const { id } = useParams();
 
   const sessionLiveStatus = async (boolValue) => {
-    debugger;
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}/trainer/live_status/${classId}/${boolValue}`
@@ -154,6 +153,7 @@ const SessionRoom = () => {
           role: "Host",
         },
       },
+      showLeavingView: false,
       onJoinRoom: async () => {
         await sessionLiveStatus(true);
       },
