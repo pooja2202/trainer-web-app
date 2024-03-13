@@ -38,28 +38,12 @@ const Home = () => {
       console.error("Error fetching :", error);
     }
   };
-  const sessionLiveStatus = async (classIdValue) => {
-    try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/trainer/live_status/${classIdValue}`
-      );
-      console.log(
-        "sessionLiveStatus method call-----",
-        response?.data?.message
-      );
-    } catch (error) {
-      console.error("Error fetching sessions:", error);
-    }
-  };
 
   const handleJoinClass = async (classIdValue) => {
     const meetingIdValue = await startClassHandler(classIdValue);
-    sessionLiveStatus(classIdValue);
     navigate(`/session-room/${meetingIdValue}`, {
       state: { meetingId: meetingIdValue, classId: classIdValue },
     });
-    // navigate(`/session-room/${meetingIdValue}?classId=${classIdValue}`);
-    // navigate(`/session-room/${meetingIdValue}`);
   };
 
   useEffect(() => {

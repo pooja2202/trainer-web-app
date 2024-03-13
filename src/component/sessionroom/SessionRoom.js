@@ -12,13 +12,14 @@ const SessionRoom = () => {
   const { trainer } = useTrainer();
   const { id } = useParams();
 
-  const sessionLiveStatus = async () => {
+  const sessionLiveStatus = async (boolValue) => {
+    debugger;
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/trainer/live_status/${classId}`
+        `${process.env.REACT_APP_API_URL}/trainer/live_status/${classId}/${boolValue}`
       );
       console.log(
-        "sessionLiveStatus method call-----",
+        "Pooja sessionLiveStatus method call-----",
         response?.data?.message
       );
     } catch (error) {
@@ -153,8 +154,11 @@ const SessionRoom = () => {
           role: "Host",
         },
       },
+      onJoinRoom: async () => {
+        await sessionLiveStatus(true);
+      },
       onLeaveRoom: async () => {
-        await sessionLiveStatus();
+        await sessionLiveStatus(false);
         await endSession();
         navigate("/home");
         await new Promise((resolve) => window.location.reload());
